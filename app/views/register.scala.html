@@ -1,0 +1,23 @@
+@(userRegistrationForm: Form[forms.UserInformation])(implicit request: RequestHeader,messages: MessagesProvider)
+@import helper._
+@main("Registration Page"){
+@if(userRegistrationForm.hasGlobalErrors) {
+<p>
+    @userRegistrationForm.globalError.map{ error => @error.message}
+</p>
+}
+@helper.form(action = routes.RegistrationController.registerUser()) {
+@CSRF.formField
+@helper.inputText(userRegistrationForm("firstName"),'_showConstraints->false)
+@helper.inputText(userRegistrationForm("middleName"))
+@helper.inputText(userRegistrationForm("lastName"),'_showConstraints->false)
+@helper.inputText(userRegistrationForm("userName"),'_showConstraints->false)
+@helper.inputPassword(userRegistrationForm("password"),'_showConstraints->false)
+@helper.inputPassword(userRegistrationForm("reEnterPassword"),'_showConstraints->false)
+@helper.inputText(userRegistrationForm("mobileNumber"),'_showConstraints->false)
+@helper.select(userRegistrationForm("gender"),options(List("Male","Female")),'_showConstraints->false)
+@helper.inputText(userRegistrationForm("age"),'type -> "number",'_showConstraints->false)
+@helper.select(userRegistrationForm("hobbies"),options(List("Reading","Dancing","Singing","Playing Cricket","Cooking")),'_showConstraints->false)
+<button type="submit">Register</button>
+}
+}

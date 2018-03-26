@@ -1,0 +1,16 @@
+@(userAssignmentForm: Form[forms.AssignmentData])(implicit messages:MessagesProvider,request: RequestHeader,flash: Flash)
+@import helper._
+<form action="@routes.AdminController.addAssignment()" method="post">
+    @CSRF.formField
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" class="form-control" name="title" id="title">
+        @userAssignmentForm("title").error.map{error => @error.message}
+    </div><br>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea class="form-control" name="description" id="description"></textarea>
+        @userAssignmentForm("description").error.map{error => @error.message}
+    </div><br>
+    <button type="submit" class="btn btn-default">Add Assignment</button>
+</form>

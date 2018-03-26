@@ -1,0 +1,28 @@
+@(userProfileForm: Form[forms.UserProfile],admin: Boolean)(implicit flash: Flash,request: RequestHeader,messages: MessagesProvider)
+@import helper._
+<div>@flash.get("success").getOrElse("")</div>
+<div>@flash.get("logged in").getOrElse("")</div>
+<div>@flash.get("not exists").getOrElse("")</div>
+<div>@flash.get("password updated").getOrElse("")</div>
+<div>@flash.get("incorrect").getOrElse("")</div>
+<div>@flash.get("profile updated").getOrElse("")</div>
+<div>
+    @if(admin){
+      @adminNavBar()
+    }else{
+    @userNavBar()
+    }
+</div>
+@main("User Profile Page"){
+@helper.form(action = routes.ProfileController.updateUser()) {
+@CSRF.formField
+@helper.inputText(userProfileForm("firstName"),'_showConstraints->false)
+@helper.inputText(userProfileForm("middleName"))
+@helper.inputText(userProfileForm("lastName"),'_showConstraints->false)
+@helper.inputText(userProfileForm("mobileNumber"),'_showConstraints->false)
+@helper.select(userProfileForm("gender"),options(List("Male","Female")),'_showConstraints->false)
+@helper.inputText(userProfileForm("age"),'type -> "number",'_showConstraints->false)
+@helper.select(userProfileForm("hobbies"),options(List("Reading","Dancing","Singing","Playing Cricket","Cooking")),'_showConstraints->false)
+<button type="submit">Update</button>
+}
+}
