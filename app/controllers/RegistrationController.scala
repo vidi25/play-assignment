@@ -27,12 +27,12 @@ class RegistrationController @Inject()(userForms: UserForms,
           Future.successful(BadRequest(views.html.register(formWithError)))
         },
         data => {
-          val user = UserData(0, data.firstName, data.middleName, data.lastName, data.userName, data.password, data.mobileNo, data.gender, data.age, data.hobbies)
+          val user = UserData(0, data.firstName, data.middleName, data.lastName, data.userName, data.password, data.mobileNo, data.gender, data.age, data.hobbies,true,false)
           userRepository.checkUserExists(user.userName) flatMap {
             case true => Future.successful(Redirect(routes.LoginController.showLoginForm()).flashing("user exists" -> "user already exists, log in"))
             case false => userRepository.store(user).map {
               case true =>
-                Redirect(routes.ProfileController.displayUser()).withSession("userName" -> data.userName).flashing("success" -> "user created successfully")
+                Redirect(routes.ProfileController.displayUser()).withSession("userName" -> data.userName,"isAdmin" -> false.toString).flashing("success" -> "user created successfully")
               case false => InternalServerError("Could not create user")
             }
           }

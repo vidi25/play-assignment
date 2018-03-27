@@ -8,6 +8,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ProfileController @Inject()(cc: ControllerComponents,
                                   userRepository: UserRepository,
@@ -16,39 +17,43 @@ class ProfileController @Inject()(cc: ControllerComponents,
 
   def displayUser() = Action.async {
     implicit request =>
-      val userName = request.session.get("userName").get
-      val isAdmin = userRepository.checkIsAdmin(userName)
-      val userData = userRepository.getUserDetails(userName)
-      for {
-        admin <- isAdmin
-        userDetails <- userData
-      } yield {
-        val userProfile = UserProfile(userDetails.firstName, userDetails.middleName,
-          userDetails.lastName, userDetails.mobileNo, userDetails.gender, userDetails.age, userDetails.hobbies)
-        val filledProfileForm = userForms.profileForm.fill(userProfile)
-        Ok(views.html.profileDisplay(filledProfileForm, admin))
+      val userName = request.session.get("userName")
+      userName match {
+        case Some(username) => {
+          val userData = userRepository.getUserDetails(username)
+          userData.map{
+            userdata =>
+              val userProfile = UserProfile(userdata.firstName, userdata.middleName,
+              userdata.lastName, userdata.mobileNo, userdata.gender, userdata.age, userdata.hobbies)
+            val filledProfileForm = userForms.profileForm.fill(userProfile)
+            Ok(views.html.profileDisplay(filledProfileForm))
+          }
+        }
+        case None => Future.successful(InternalServerError("session expired, user not found"))
       }
   }
 
 
   def updateUser() = Action.async {
     implicit request =>
-      val username = request.session.get("userName").get
       userForms.profileForm.bindFromRequest().fold(
         formWithError => {
-          val isAdmin = userRepository.checkIsAdmin(username)
-          isAdmin.map {
-            case true => BadRequest(views.html.profileDisplay(formWithError, false))
-            case false => Redirect(routes.LoginController.showLoginForm())
-          }
-        },
+          Future.successful(BadRequest(views.html.profileDisplay(formWithError)))
+          },
         data => {
           val updatedUser = UserProfile(data.firstName, data.middleName, data.lastName, data.mobileNo, data.gender, data.age, data.hobbies)
-          userRepository.updateProfile(username, updatedUser).map {
-            case true =>
-              Redirect(routes.ProfileController.displayUser()).withSession("userName" -> username).flashing("profile updated" -> "profile updated successfully")
-            case false => InternalServerError("Could not update user")
+          val userName = request.session.get("userName")
+          userName match {
+            case Some(username) => {
+              userRepository.updateProfile(username, updatedUser).map {
+                case true =>
+                  Redirect(routes.ProfileController.displayUser()).flashing("profile updated" -> "profile updated successfully")
+                case false => InternalServerError("Could not update user")
+              }
+            }
+            case None => Future.successful(InternalServerError("session expired, user not found"))
           }
+
         }
       )
   }

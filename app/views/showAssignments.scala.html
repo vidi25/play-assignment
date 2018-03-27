@@ -1,0 +1,31 @@
+@(listOfAssignments: List[Assignment])
+@main("Assignments list"){
+<div>
+    @adminNavBar()
+</div>
+<br>
+<br>
+<div class="container">
+    <div class="text-center">
+        <h2>List of Assignments</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for(assignment <- listOfAssignments){
+            <tr>
+                <td>@assignment.title</td>
+                <td>
+                    <a type="button" href="@routes.AdminController.deleteAssignment(assignment.id)">Delete</a>
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+}

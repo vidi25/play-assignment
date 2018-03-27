@@ -7,6 +7,8 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.12.3"
 
+javaOptions in Test += "-Dconfig.file=conf/test.conf"
+
 libraryDependencies ++= Seq(
   guice,
   ehcache,

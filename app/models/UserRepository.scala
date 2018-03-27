@@ -22,7 +22,7 @@ case class UserData(id: Int,
                     age: Int,
                     hobbies: String,
                     isEnabled: Boolean = true,
-                    isAdmin: Boolean = false)
+                    isAdmin: Boolean)
 
 class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider) extends UserRepositoryTable with UserFunctions {
 
@@ -36,10 +36,6 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   def validateUser(userName: String,password: String): Future[Option[UserData]] =
     db.run(userQuery.filter(user => user.userName === userName && user.password === password ).result.headOption)
-
-  def checkIsAdmin(userName: String): Future[Boolean] =
-    db.run(userQuery.filter(user => user.userName === userName).map(user => user.isAdmin).result.head)
-
 
   def getAllUsers: Future[List[UserData]] =
     db.run(userQuery.filter(user => user.isAdmin === false).to[List].result)
@@ -110,7 +106,6 @@ trait UserFunctions {
 
   def store(user: UserData): Future[Boolean]
   def validateUser(userName: String,password: String): Future[Option[UserData]]
-  def checkIsAdmin(userName: String): Future[Boolean]
   def checkUserExists(userName: String): Future[Boolean]
   def getAllUsers: Future[List[UserData]]
   def updateProfile(userName: String,updatedUserData: UserProfile): Future[Boolean]

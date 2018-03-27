@@ -91,7 +91,8 @@ class UserForms {
 
   val assignmentForm = Form(mapping(
     "title" -> nonEmptyText,
-    "description" -> nonEmptyText
+    "description" -> nonEmptyText.verifying("Length should not be more than 100 characters",
+  description => if(description.length <=100) true else false)
   )(AssignmentData.apply)(AssignmentData.unapply))
 
   val forgetPasswordForm = Form(mapping(

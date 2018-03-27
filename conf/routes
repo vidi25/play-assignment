@@ -19,3 +19,7 @@ POST    /updatePassword              controllers.LoginController.changePassword
 GET     /logout                      controllers.ProfileController.logout
 GET     /assignmentForm              controllers.AdminController.showAssignmentForm
 POST    /addAssignment               controllers.AdminController.addAssignment
+GET     /displayUsers                controllers.AdminController.displayUsers
+GET     /enableDisableUser          controllers.AdminController.enableOrDisableUser(username: String,value: Boolean)
+GET     /showAssignments            controllers.AdminController.viewAssignments
+GET    /deleteAssignment           controllers.AdminController.deleteAssignment(id: Int)

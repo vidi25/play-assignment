@@ -1,16 +1,14 @@
-@(userProfileForm: Form[forms.UserProfile],admin: Boolean)(implicit flash: Flash,request: RequestHeader,messages: MessagesProvider)
+@(userProfileForm: Form[forms.UserProfile])(implicit flash: Flash,request: RequestHeader,messages: MessagesProvider)
 @import helper._
 <div>@flash.get("success").getOrElse("")</div>
 <div>@flash.get("logged in").getOrElse("")</div>
-<div>@flash.get("not exists").getOrElse("")</div>
 <div>@flash.get("password updated").getOrElse("")</div>
-<div>@flash.get("incorrect").getOrElse("")</div>
 <div>@flash.get("profile updated").getOrElse("")</div>
 <div>
-    @if(admin){
-      @adminNavBar()
+    @if(request.session.get("isAdmin").getOrElse("false") == "false"){
+      @userNavBar()
     }else{
-    @userNavBar()
+    @adminNavBar()
     }
 </div>
 @main("User Profile Page"){

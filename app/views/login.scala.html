@@ -1,6 +1,9 @@
 @(userLoginForm: Form[forms.LoginUser])(implicit messages:MessagesProvider,request: RequestHeader,flash: Flash)
 @import helper._
-<div>@flash.get("logged out").getOrElse("")</div><br>
+<div>@flash.get("logged out").getOrElse("")</div>
+<div>@flash.get("incorrect user").getOrElse("")</div>
+<div>@flash.get("user exists").getOrElse("")</div>
+<div>@flash.get("disabled").getOrElse("")</div><br>
 <form action="@routes.LoginController.handleLogin()" method="post">
     @CSRF.formField
     <div class="form-group">
