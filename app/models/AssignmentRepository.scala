@@ -13,17 +13,18 @@ case class Assignment(id: Int,
                       title: String,
                       description: String)
 
-class AssignmentRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends AssignmentRepositoryTable with AssignmentFunctions {
+class AssignmentRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends AssignmentRepositoryTable with AssignmentRepoFunctions {
 
   import profile.api._
 
   override def addAssignment(assignment: Assignment): Future[Boolean] =
     db.run(assignmentQuery += assignment) map (_ > 0)
 
-  override def deleteAssignment(id: Int): Future[Boolean] =
+  override def deleteAssignment(id: Int): Future[Boolean] = {
     db.run(assignmentQuery.filter(assignment => assignment.id === id).delete).map(_ > 0)
+  }
 
-  override def getAssignment: Future[List[Assignment]] =
+  override def getListOfAssignments: Future[List[Assignment]] =
     db.run(assignmentQuery.to[List].result)
 
 }
@@ -47,10 +48,10 @@ trait AssignmentRepositoryTable extends HasDatabaseConfigProvider[JdbcProfile] {
 
 }
 
-trait AssignmentFunctions {
+trait AssignmentRepoFunctions {
   def addAssignment(assignment: Assignment): Future[Boolean]
 
   def deleteAssignment(id: Int): Future[Boolean]
 
-  def getAssignment: Future[List[Assignment]]
+  def getListOfAssignments: Future[List[Assignment]]
 }

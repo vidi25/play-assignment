@@ -1,9 +1,5 @@
 @(userProfileForm: Form[forms.UserProfile])(implicit flash: Flash,request: RequestHeader,messages: MessagesProvider)
 @import helper._
-<div>@flash.get("success").getOrElse("")</div>
-<div>@flash.get("logged in").getOrElse("")</div>
-<div>@flash.get("password updated").getOrElse("")</div>
-<div>@flash.get("profile updated").getOrElse("")</div>
 <div>
     @if(request.session.get("isAdmin").getOrElse("false") == "false"){
       @userNavBar()
@@ -11,16 +7,20 @@
     @adminNavBar()
     }
 </div>
+<div class="message">@flash.get("success").getOrElse("")</div>
+<div class="message">@flash.get("logged in").getOrElse("")</div>
+<div class="message">@flash.get("password updated").getOrElse("")</div>
+<div class="message">@flash.get("profile updated").getOrElse("")</div><br>
 @main("User Profile Page"){
 @helper.form(action = routes.ProfileController.updateUser()) {
 @CSRF.formField
-@helper.inputText(userProfileForm("firstName"),'_showConstraints->false)
-@helper.inputText(userProfileForm("middleName"))
-@helper.inputText(userProfileForm("lastName"),'_showConstraints->false)
-@helper.inputText(userProfileForm("mobileNumber"),'_showConstraints->false)
-@helper.select(userProfileForm("gender"),options(List("Male","Female")),'_showConstraints->false)
-@helper.inputText(userProfileForm("age"),'type -> "number",'_showConstraints->false)
-@helper.select(userProfileForm("hobbies"),options(List("Reading","Dancing","Singing","Playing Cricket","Cooking")),'_showConstraints->false)
+@helper.inputText(userProfileForm("firstName"),'_showConstraints->false,'_label->"First Name")
+@helper.inputText(userProfileForm("middleName"),'_label->"Middle Name")
+@helper.inputText(userProfileForm("lastName"),'_showConstraints->false,'_label->"Last Name")
+@helper.inputText(userProfileForm("mobileNumber"),'_showConstraints->false,'_label->"Mobile Number")
+@helper.select(userProfileForm("gender"),options(List("Male","Female")),'_showConstraints->false,'_label->"Gender")
+@helper.inputText(userProfileForm("age"),'type -> "number",'_showConstraints->false,'_label->"Age")
+@helper.select(userProfileForm("hobbies"),options(List("Reading","Dancing","Singing","Playing Cricket","Cooking")),'_showConstraints->false,'_label->"Hobbies")
 <button type="submit">Update</button>
 }
 }

@@ -1,23 +1,26 @@
 @(userRegistrationForm: Form[forms.UserInformation])(implicit request: RequestHeader,messages: MessagesProvider)
 @import helper._
 @main("Registration Page"){
+<center>
+<h3>Registration Form</h3>
 @if(userRegistrationForm.hasGlobalErrors) {
-<p>
+<p class="error-message">
     @userRegistrationForm.globalError.map{ error => @error.message}
 </p>
 }
 @helper.form(action = routes.RegistrationController.registerUser()) {
 @CSRF.formField
-@helper.inputText(userRegistrationForm("firstName"),'_showConstraints->false)
-@helper.inputText(userRegistrationForm("middleName"))
-@helper.inputText(userRegistrationForm("lastName"),'_showConstraints->false)
-@helper.inputText(userRegistrationForm("userName"),'_showConstraints->false)
-@helper.inputText(userRegistrationForm("password"),'_showConstraints->false)
-@helper.inputText(userRegistrationForm("reEnterPassword"),'_showConstraints->false)
-@helper.inputText(userRegistrationForm("mobileNumber"),'_showConstraints->false)
-@helper.select(userRegistrationForm("gender"),options(List("Male","Female")),'_showConstraints->false)
-@helper.inputText(userRegistrationForm("age"),'type -> "number",'_showConstraints->false)
-@helper.select(userRegistrationForm("hobbies"),options(List("Reading","Dancing","Singing","Playing Cricket","Cooking")),'_showConstraints->false)
+@helper.inputText(userRegistrationForm("firstName"),'_showConstraints->false,'_label->"First Name")
+@helper.inputText(userRegistrationForm("middleName"),'_label->"Middle Name")
+@helper.inputText(userRegistrationForm("lastName"),'_showConstraints->false,'_label->"Last Name")
+@helper.inputText(userRegistrationForm("userName"),'_showConstraints->false,'label->"User Name")
+@helper.inputText(userRegistrationForm("password"),'_showConstraints->false,'_label->"Password")
+@helper.inputText(userRegistrationForm("reEnterPassword"),'_showConstraints->false,'_label->"Re-Enter Password")
+@helper.inputText(userRegistrationForm("mobileNumber"),'_showConstraints->false,'_label->"Mobile Number")
+@helper.select(userRegistrationForm("gender"),options(List("Male","Female")),'_showConstraints->false,'_label->"Gender")
+@helper.inputText(userRegistrationForm("age"),'type -> "number",'_showConstraints->false,'_label->"Age")
+@helper.select(userRegistrationForm("hobbies"),options(List("Reading","Dancing","Singing","Playing Cricket","Cooking")),'_showConstraints->false,'_label->"Hobbies")
 <button type="submit">Register</button>
+</center>
 }
 }

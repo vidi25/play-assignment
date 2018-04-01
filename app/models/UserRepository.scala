@@ -24,7 +24,7 @@ case class UserData(id: Int,
                     isEnabled: Boolean = true,
                     isAdmin: Boolean)
 
-class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider) extends UserRepositoryTable with UserFunctions {
+class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider) extends UserRepositoryTable with UserRepoFunctions {
 
   import profile.api._
 
@@ -102,7 +102,7 @@ trait UserRepositoryTable extends HasDatabaseConfigProvider[JdbcProfile] {
 
 }
 
-trait UserFunctions {
+trait UserRepoFunctions {
 
   def store(user: UserData): Future[Boolean]
   def validateUser(userName: String,password: String): Future[Option[UserData]]

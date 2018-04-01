@@ -1,21 +1,29 @@
 @(userLoginForm: Form[forms.LoginUser])(implicit messages:MessagesProvider,request: RequestHeader,flash: Flash)
 @import helper._
-<div>@flash.get("logged out").getOrElse("")</div>
-<div>@flash.get("incorrect user").getOrElse("")</div>
-<div>@flash.get("user exists").getOrElse("")</div>
-<div>@flash.get("disabled").getOrElse("")</div><br>
+<div class="message">@flash.get("logged out").getOrElse("")</div>
+<div class="message">@flash.get("incorrect user").getOrElse("")</div>
+<div class="message">@flash.get("user exists").getOrElse("")</div>
+<div class="message">@flash.get("disabled").getOrElse("")</div><br>
+@main("Login Form"){
+<h3>Login Form</h3>
 <form action="@routes.LoginController.handleLogin()" method="post">
     @CSRF.formField
-    <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" class="form-control" name="username" id="username">
-        @userLoginForm("username").error.map{error => @error.message}
-    </div><br>
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" class="form-control" name="password" id="password">
-        @userLoginForm("password").error.map{error => @error.message}
-    </div><br>
-    <button type="submit" class="btn btn-default">Login</button><br><br>
+    <div class="row">
+        <div class="form-group col-xs-2">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" name="username" id="username">
+            <p class="error-message">@userLoginForm("username").error.map{error => @error.message}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-xs-2">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" name="password" id="password">
+            <p class="error-message">@userLoginForm("password").error.map{error => @error.message}</p>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-default">Login</button>
+    <br><br>
     <a href="@routes.LoginController.showForgetPasswordForm()">Forgot Password</a>
 </form>
+}

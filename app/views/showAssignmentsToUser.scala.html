@@ -1,7 +1,7 @@
 @(listOfAssignments: List[Assignment])(implicit request: RequestHeader)
 @main("Assignments list"){
 <div>
-    @adminNavBar()
+    @userNavBar()
 </div>
 <br>
 <br>
@@ -12,16 +12,12 @@
             <thead>
             <tr>
                 <th class="text-center">Title</th>
-                <th class="text-center">Delete</th>
             </tr>
             </thead>
             <tbody>
             @for(assignment <- listOfAssignments){
             <tr>
                 <td>@assignment.title</td>
-                <td>
-                    <a href="@routes.AdminController.deleteAssignment(assignment.id)"><button>Delete</button></a>
-                </td>
             </tr>
             }
             </tbody>
