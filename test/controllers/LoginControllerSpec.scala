@@ -37,6 +37,7 @@ class LoginControllerSpec extends PlaySpec with Mockito {
 
       val result = controller.loginController.handleLogin().apply(request)
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/userProfile")
     }
 
     "not match invalid credentials" in {
@@ -49,6 +50,7 @@ class LoginControllerSpec extends PlaySpec with Mockito {
 
       val result = controller.loginController.handleLogin().apply(request)
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/login")
     }
 
     "not login if user is not enabled" in {
@@ -60,6 +62,7 @@ class LoginControllerSpec extends PlaySpec with Mockito {
 
       val result = controller.loginController.handleLogin().apply(request)
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/login")
     }
 
     "handle login form with errors" in {
@@ -81,6 +84,7 @@ class LoginControllerSpec extends PlaySpec with Mockito {
     }
 
     "update password of user" in {
+
       when(controller.userInfoRepo.checkUserExists("amit@12")) thenReturn Future.successful(true)
       when(controller.userInfoRepo.updatePassword("amit@12","amit2403")) thenReturn Future.successful(true)
 
@@ -90,6 +94,7 @@ class LoginControllerSpec extends PlaySpec with Mockito {
 
       val result = controller.loginController.changePassword().apply(request)
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/userProfile")
 
     }
 
@@ -115,6 +120,7 @@ class LoginControllerSpec extends PlaySpec with Mockito {
 
       val result = controller.loginController.changePassword().apply(request)
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/changePassword")
     }
 
     "not update when new password and confirm password don't match" in {

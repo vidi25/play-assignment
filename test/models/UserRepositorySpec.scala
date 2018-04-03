@@ -5,6 +5,7 @@ import org.specs2.mutable.Specification
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import utils.PasswordHashing._
 
 class UserRepositorySpec extends Specification{
 
@@ -20,7 +21,8 @@ val userRepo = new ModelsTest[UserRepository]
 
     "validate user and return user data" in {
       val validatedUser = Await.result(userRepo.repository.validateUser("amit@12","amit1234"),Duration.Inf)
-      validatedUser must beSome(UserData(1,"Amit",Some("Kumar"),"Singh","amit@12","amit1234","9987645321","male",34,"Dancing",isAdmin = false))
+      val encryptedPassword = encryptPassword("amit1234")
+      validatedUser must beSome(UserData(1,"Amit",Some("Kumar"),"Singh","amit@12",encryptedPassword,"9987645321","male",34,"Dancing",isAdmin = false))
     }
 
     "return None when credentials do not match" in {
@@ -40,7 +42,8 @@ val userRepo = new ModelsTest[UserRepository]
 
     "get all users list registered" in {
       val usersList = Await.result(userRepo.repository.getAllUsers,Duration.Inf)
-      usersList must equalTo(List(UserData(1,"Amit",Some("Kumar"),"Singh","amit@12","amit1234","9987645321","male",34,"Dancing",isAdmin = false)))
+      val encryptedPassword: String = encryptPassword("amit1234")
+      usersList must equalTo(List(UserData(1,"Amit",Some("Kumar"),"Singh","amit@12",encryptedPassword,"9987645321","male",34,"Dancing",isAdmin = false)))
     }
 
     "get user details of a particular user" in {

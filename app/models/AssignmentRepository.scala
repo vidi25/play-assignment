@@ -17,13 +17,27 @@ class AssignmentRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   import profile.api._
 
+  /**
+    * this method adds assignment to the database.
+    * @param assignment : contains assignment data
+    * @return Future of Boolean
+    */
   override def addAssignment(assignment: Assignment): Future[Boolean] =
     db.run(assignmentQuery += assignment) map (_ > 0)
 
+  /**
+    * deletes assignment from database.
+    * @param id: assignment id to be deleted
+    * @return Future of Boolean
+    */
   override def deleteAssignment(id: Int): Future[Boolean] = {
     db.run(assignmentQuery.filter(assignment => assignment.id === id).delete).map(_ > 0)
   }
 
+  /**
+    * returns a list of assignments from database.
+    * @return Future of List of Assignment
+    */
   override def getListOfAssignments: Future[List[Assignment]] =
     db.run(assignmentQuery.to[List].result)
 
