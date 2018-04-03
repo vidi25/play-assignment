@@ -20,9 +20,10 @@ class AdminControllerSpec extends PlaySpec with Mockito {
   "Admin Controller" should {
     "render assignment form" in {
 
-      controller.adminController.showAssignmentForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
+     val result = controller.adminController.showAssignmentForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
         -> "9c48f081724087b31f")
         .withCSRFToken)
+      status(result) must equal(OK)
     }
 
     "add assignment in database" in {
@@ -38,14 +39,27 @@ class AdminControllerSpec extends PlaySpec with Mockito {
       status(result) mustBe  SEE_OTHER
     }
 
-    "return a bad request if assignment form is not filled properly" in {
+    "fail to add assignment in database" in {
+
+      val assignment = Assignment(0,"Spark Streaming Assignment","Develop an application which gets tweets from Twitter api")
+      when(controller.assignmentRepo.addAssignment(assignment)) thenReturn Future.successful(false)
 
       val request = FakeRequest(POST, "/addAssignment").withFormUrlEncodedBody("csrfToken"
         -> "9c48f081724087b31fcf6099b7ea","title"->"Spark Streaming Assignment","description"->"Develop an application which gets tweets from Twitter api")
         .withCSRFToken
 
       val result = controller.adminController.addAssignment().apply(request)
-      status(result) mustBe  SEE_OTHER
+      status(result) mustBe  500
+    }
+
+    "return a bad request if assignment form is not filled properly" in {
+
+      val request = FakeRequest(POST, "/addAssignment").withFormUrlEncodedBody("csrfToken"
+        -> "9c48f081724087b31fcf6099b7ea","title"->"","description"->"Develop an application which gets tweets from Twitter api")
+        .withCSRFToken
+
+      val result = controller.adminController.addAssignment().apply(request)
+      status(result) mustBe  400
 
     }
 
@@ -71,6 +85,17 @@ class AdminControllerSpec extends PlaySpec with Mockito {
 
     }
 
+    "fail to enable or disable user" in {
+
+      when(controller.userInfoRepo.enableDisableUser("amit@12",newValue=false)) thenReturn Future.successful(false)
+
+      val request = FakeRequest(GET, "/enableOrDisableUser")
+
+      val result = controller.adminController.enableOrDisableUser("amit@12",updatedValue = false).apply(request)
+      status(result) mustBe 500
+
+    }
+
     "display a list of assignments" in {
 
       when(controller.assignmentRepo.getListOfAssignments) thenReturn
@@ -81,6 +106,27 @@ class AdminControllerSpec extends PlaySpec with Mockito {
       status(result) must equal(OK)
     }
 
+    "display a list of assignments to user" in {
+
+      when(controller.assignmentRepo.getListOfAssignments) thenReturn
+        Future.successful(List(Assignment(1,"Spark Streaming Assignment","Develop an application which gets tweets from Twitter Api")))
+      val request = FakeRequest(GET, "/viewAssignments").withSession("userName"->"amit@12","isAdmin"->"false")
+
+      val result = controller.adminController.viewAssignments().apply(request)
+      status(result) must equal(OK)
+    }
+
+
+    "fail to display a list of assignments if session expired" in {
+
+      when(controller.assignmentRepo.getListOfAssignments) thenReturn
+        Future.successful(List(Assignment(1,"Spark Streaming Assignment","Develop an application which gets tweets from Twitter Api")))
+      val request = FakeRequest(GET, "/viewAssignments")
+
+      val result = controller.adminController.viewAssignments().apply(request)
+      status(result) mustBe 500
+    }
+
     "delete assignment successfully" in {
 
       when(controller.assignmentRepo.deleteAssignment(1)) thenReturn Future.successful(true)
@@ -89,6 +135,17 @@ class AdminControllerSpec extends PlaySpec with Mockito {
       val result = controller.adminController.deleteAssignment(1).apply(request)
       status(result) mustBe SEE_OTHER
     }
+
+
+    "fail to delete assignment" in {
+
+      when(controller.assignmentRepo.deleteAssignment(1)) thenReturn Future.successful(false)
+      val request = FakeRequest(GET, "/deleteAssignments")
+
+      val result = controller.adminController.deleteAssignment(1).apply(request)
+      status(result) mustBe 500
+    }
+
   }
 
   def getMockedObject: TestObjects = {

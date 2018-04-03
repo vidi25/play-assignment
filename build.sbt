@@ -19,9 +19,11 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
   "mysql" % "mysql-connector-java" % "5.1.35",
   "com.h2database" % "h2" % "1.4.196",
-  "log4j" % "log4j" % "1.2.17"
+  "log4j" % "log4j" % "1.2.17",
+  "org.scalatest" % "scalatest_2.12" % "3.0.4" % "test"
 )
 
+coverageExcludedPackages := "forms;router;controllers.javascript"
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "edu.knoldus.controllers._"
 

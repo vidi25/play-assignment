@@ -20,7 +20,7 @@ class ForgetPasswordSpec extends PlaySpec with Mockito{
     val requestHeader: RequestHeader = mock[RequestHeader]
     val flash = mock[Flash]
     val html = views.html.forgetPassword(mockedForm.forgetPasswordForm)(flash,messageProvider,requestHeader)
-    contentAsString(html) must include("Forgot Password")
+    contentAsString(html) must include("Reset Password")
 
   }
 }

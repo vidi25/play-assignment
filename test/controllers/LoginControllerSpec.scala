@@ -21,9 +21,10 @@ class LoginControllerSpec extends PlaySpec with Mockito {
   "Login Controller" should {
     "show login form" in {
 
-      controller.loginController.showLoginForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
-        -> "9c48f081724087b31fcf6099b7eaf6a276834cd9")
+       val result = controller.loginController.showLoginForm().apply(FakeRequest(GET, "/")
+         .withFormUrlEncodedBody("csrfToken" -> "9c48f081724087b31fcf6099b7eaf6a276834cd9")
         .withCSRFToken)
+       status(result) must equal(OK)
     }
 
     "login the valid user" in {
@@ -61,11 +62,22 @@ class LoginControllerSpec extends PlaySpec with Mockito {
       status(result) mustBe SEE_OTHER
     }
 
-    "show forget password form" in {
+    "handle login form with errors" in {
+      val request = FakeRequest(POST, "/login").withFormUrlEncodedBody("csrfToken"
+        -> "9c48f081724087b31f","username"->"","password"->"amit1234")
+        .withCSRFToken
 
-      controller.loginController.showForgetPasswordForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
+      val result = controller.loginController.handleLogin().apply(request)
+      status(result) mustBe 400
+    }
+
+
+    "render forget password form" in {
+
+      val result = controller.loginController.showForgetPasswordForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
         -> "9c48f081724087b31fcf6099b7eaf6a276834cd9")
         .withCSRFToken)
+      status(result) must equal(OK)
     }
 
     "update password of user" in {
@@ -78,6 +90,19 @@ class LoginControllerSpec extends PlaySpec with Mockito {
 
       val result = controller.loginController.changePassword().apply(request)
       status(result) mustBe SEE_OTHER
+
+    }
+
+    "fail to update password of user" in {
+      when(controller.userInfoRepo.checkUserExists("amit@12")) thenReturn Future.successful(true)
+      when(controller.userInfoRepo.updatePassword("amit@12","amit2403")) thenReturn Future.successful(false)
+
+      val request = FakeRequest(POST, "/updatePassword").withFormUrlEncodedBody("csrfToken"
+        -> "9c48f081724087b31f","username"->"amit@12","newPassword"->"amit2403","confirmPassword"->"amit2403")
+        .withCSRFToken
+
+      val result = controller.loginController.changePassword().apply(request)
+      status(result) mustBe 500
 
     }
 

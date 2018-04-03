@@ -20,12 +20,12 @@ class RegistrationControllerSpec extends PlaySpec with Mockito {
   "Registration Controller" should {
     "render the registration form for user" in {
 
-      controller.registrationController.showRegistrationForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
+      val result = controller.registrationController.showRegistrationForm().apply(FakeRequest(GET, "/").withFormUrlEncodedBody("csrfToken"
         -> "9c48f081724087b31fcf6099b7eaf6a276834cd9")
         .withCSRFToken)
+      status(result) must equal(OK)
 
     }
-
 
     "register user and save details in database" in {
 
@@ -60,15 +60,34 @@ class RegistrationControllerSpec extends PlaySpec with Mockito {
 
     }
 
-    "handle form with errors or a bad request" in {
+    "handle if user is not added in database" in {
+
+      when(controller.userInfoRepo.checkUserExists("amit@12")) thenReturn Future.successful(false)
+
+      val user = UserData( 0,"Amit",Some("Kumar"),"Singh","amit@12","amit1234","9790681651","male",34,"reading",isAdmin = false)
+
+      when(controller.userInfoRepo.store(user)) thenReturn Future.successful(false)
+
       val request = FakeRequest(POST, "/registerUser").withFormUrlEncodedBody("csrfToken"
-        -> "9c48f081724087b31fcf6099b7ea234", "firstName" -> "Amit","middleName" -> "Kumar", "lastName" -> "Singh",
+        -> "9c48f081724087b31fcf6099b7ea", "firstName" -> "Amit","middleName" -> "Kumar", "lastName" -> "Singh",
         "userName"->"amit@12","password"->"amit1234","reEnterPassword"->"amit1234","mobileNumber"->"9790681651",
         "gender"->"male","age"->"34","hobbies"->"reading")
         .withCSRFToken
 
       val result = controller.registrationController.registerUser().apply(request)
-      status(result) mustBe SEE_OTHER
+      status(result) mustBe  500
+
+    }
+
+    "handle form with errors or a bad request" in {
+      val request = FakeRequest(POST, "/registerUser").withFormUrlEncodedBody("csrfToken"
+        -> "9c48f081724087b31fcf6099b7ea234", "firstName" -> "Amit","middleName" -> "Kumar", "lastName" -> "",
+        "userName"->"amit@12","password"->"amit1234","reEnterPassword"->"amit1234","mobileNumber"->"9790681651",
+        "gender"->"male","age"->"34","hobbies"->"reading")
+        .withCSRFToken
+
+      val result = controller.registrationController.registerUser().apply(request)
+      status(result) mustBe 400
 
     }
 
