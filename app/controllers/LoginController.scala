@@ -15,11 +15,18 @@ class LoginController @Inject()(cc: ControllerComponents,
                                 userForms: UserForms)
   extends AbstractController(cc) with I18nSupport {
 
+  /**
+    * an action which renders login form.
+    * @return the login html page in form of Ok
+    */
   def showLoginForm(): Action[AnyContent] = Action {
     implicit request =>
       Ok(views.html.login(userForms.loginForm))
   }
 
+  /**
+    * an action which validates the user credentials and let him login.
+    */
   def handleLogin(): Action[AnyContent] = Action.async {
     implicit request =>
       userForms.loginForm.bindFromRequest().fold(
@@ -47,11 +54,19 @@ class LoginController @Inject()(cc: ControllerComponents,
       )
   }
 
+  /**
+    * an action which renders a page for resetting password.
+    * @return redirects to the html page
+    */
   def showForgetPasswordForm(): Action[AnyContent] = Action {
     implicit request =>
       Ok(views.html.forgetPassword(userForms.forgetPasswordForm))
   }
 
+  /**
+    * an action which updates the password of user.
+    * @return Redirect: if password updated successfully
+    */
   def changePassword(): Action[AnyContent] = Action.async {
     implicit request =>
       userForms.forgetPasswordForm.bindFromRequest().fold(

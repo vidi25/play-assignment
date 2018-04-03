@@ -15,6 +15,10 @@ class ProfileController @Inject()(cc: ControllerComponents,
                                   userForms: UserForms)
   extends AbstractController(cc) with I18nSupport {
 
+  /**
+    * an action which displays the user profile filled in form.
+    * @return html page which contains profile
+    */
   def displayUser(): Action[AnyContent] = Action.async {
     implicit request =>
       val userName = request.session.get("userName")
@@ -32,7 +36,10 @@ class ProfileController @Inject()(cc: ControllerComponents,
       }
   }
 
-
+  /**
+    * an action which updates the user profile.
+    * @return Redirect to updated user profile html page
+    */
   def updateUser(): Action[AnyContent] = Action.async {
     implicit request =>
       userForms.profileForm.bindFromRequest().fold(
@@ -56,6 +63,10 @@ class ProfileController @Inject()(cc: ControllerComponents,
       )
   }
 
+  /**
+    * an action which logs out the user.
+    * @return Redirect to login page
+    */
   def logout(): Action[AnyContent] = Action {
     implicit request =>
      Redirect(routes.LoginController.showLoginForm()).withNewSession.flashing("logged out" -> "You have been successfully logged out...")

@@ -15,11 +15,19 @@ class RegistrationController @Inject()(userForms: UserForms,
                                        cc: ControllerComponents)
   extends AbstractController(cc) with I18nSupport {
 
+  /**
+    * an action which renders registration form.
+    * @return html form for registration
+    */
   def showRegistrationForm(): Action[AnyContent] = Action {
     implicit request =>
       Ok(views.html.register(userForms.registrationForm))
   }
 
+  /**
+    * register's the user and saves his details in database.
+    * @return Redirect to user profile page
+    */
   def registerUser(): Action[AnyContent] = Action.async {
     implicit request =>
       userForms.registrationForm.bindFromRequest().fold(
