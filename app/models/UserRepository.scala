@@ -97,7 +97,8 @@ trait UserRepositoryTable extends HasDatabaseConfigProvider[JdbcProfile] {
 
     def isAdmin: Rep[Boolean] = column[Boolean]("isAdmin")
 
-    def * : ProvenShape[UserData] = (id,firstName,middleName,lastName,userName,password,mobileNo,gender,age,hobbies,isEnabled,isAdmin) <>(UserData.tupled, UserData.unapply)
+    def * : ProvenShape[UserData] = (id,firstName,middleName,lastName
+      ,userName,password,mobileNo,gender,age,hobbies,isEnabled,isAdmin) <>(UserData.tupled, UserData.unapply)
   }
 
 }

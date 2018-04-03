@@ -17,7 +17,7 @@ class AdminController @Inject()(cc: ControllerComponents,
   extends AbstractController(cc) with I18nSupport {
 
 
-  def showAssignmentForm() = Action {
+  def showAssignmentForm(): Action[AnyContent] = Action {
     implicit request =>
       Ok(views.html.assignment(userForms.assignmentForm))
   }
@@ -58,7 +58,7 @@ class AdminController @Inject()(cc: ControllerComponents,
       assignmentRepository.getListOfAssignments.map {
         assignmentsList =>
           request.session.get("isAdmin") match{
-          case Some(admin) => if(admin == "false"){
+          case Some(admin) => if (admin == "false"){
             Ok(views.html.showAssignmentsToUser(assignmentsList))
           }
           else {

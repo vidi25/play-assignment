@@ -5,7 +5,7 @@ import javax.inject.Inject
 import forms.UserForms
 import models.UserRepository
 import play.api.i18n.I18nSupport
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -15,12 +15,12 @@ class LoginController @Inject()(cc: ControllerComponents,
                                 userForms: UserForms)
   extends AbstractController(cc) with I18nSupport {
 
-  def showLoginForm() = Action {
+  def showLoginForm(): Action[AnyContent] = Action {
     implicit request =>
       Ok(views.html.login(userForms.loginForm))
   }
 
-  def handleLogin() = Action.async {
+  def handleLogin(): Action[AnyContent] = Action.async {
     implicit request =>
       userForms.loginForm.bindFromRequest().fold(
         formWithError => {
@@ -33,7 +33,9 @@ class LoginController @Inject()(cc: ControllerComponents,
           } yield {
             if (isEnabled) {
               validUser match {
-                case Some(user) => Redirect(routes.ProfileController.displayUser()).withSession("userName" -> data.userName, "isAdmin" -> user.isAdmin.toString).flashing("logged in" -> "logged in successfully")
+                case Some(user) => Redirect(routes.ProfileController.displayUser())
+                  .withSession("userName" -> data.userName, "isAdmin" -> user.isAdmin.toString)
+                  .flashing("logged in" -> "logged in successfully")
                 case None => Redirect(routes.LoginController.showLoginForm()).flashing("incorrect user" -> "invalid credentials")
               }
             }
@@ -45,12 +47,12 @@ class LoginController @Inject()(cc: ControllerComponents,
       )
   }
 
-  def showForgetPasswordForm() = Action {
+  def showForgetPasswordForm(): Action[AnyContent] = Action {
     implicit request =>
       Ok(views.html.forgetPassword(userForms.forgetPasswordForm))
   }
 
-  def changePassword() = Action.async {
+  def changePassword(): Action[AnyContent] = Action.async {
     implicit request =>
       userForms.forgetPasswordForm.bindFromRequest().fold(
         formWithError => {
@@ -60,10 +62,13 @@ class LoginController @Inject()(cc: ControllerComponents,
           userRepository.checkUserExists(data.username) flatMap {
             case true => userRepository.updatePassword(data.username, data.newPassword).map {
               case true =>
-                Redirect(routes.ProfileController.displayUser()).withSession("userName" -> data.username).flashing("password updated" -> "password changed successfully")
+                Redirect(routes.ProfileController.displayUser())
+                  .withSession("userName" -> data.username)
+                  .flashing("password updated" -> "password changed successfully")
               case false => InternalServerError("Could not update password")
             }
-            case false => Future.successful(Redirect(routes.LoginController.showForgetPasswordForm()).flashing("not exists" -> "user does not exist, try again.."))
+            case false => Future.successful(Redirect(routes.LoginController.showForgetPasswordForm())
+              .flashing("not exists" -> "user does not exist, try again.."))
           }
         })
   }

@@ -56,7 +56,7 @@ class ProfileController @Inject()(cc: ControllerComponents,
       )
   }
 
-  def logout() = Action {
+  def logout(): Action[AnyContent] = Action {
     implicit request =>
      Redirect(routes.LoginController.showLoginForm()).withNewSession.flashing("logged out" -> "You have been successfully logged out...")
   }
